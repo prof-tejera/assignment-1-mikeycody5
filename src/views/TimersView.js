@@ -23,7 +23,7 @@ const TimerTitle = styled.div``;
 
 const TimersView = () => {
   const timers = [
-    { title: "Stopwatch", C: <Stopwatch /> },
+    { C: <Stopwatch /> },
     { title: "Countdown", C: <Countdown /> },
     { title: "XY", C: <XY /> },
     { title: "Tabata", C: <Tabata /> },
