@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 const StyledButton = styled.button`
+  flex: 1;
   display: flex;
   font-weight: bold;
   font-size: 16px;

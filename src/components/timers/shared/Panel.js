@@ -4,7 +4,6 @@ import styled from "styled-components";
 const StyledPanel = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: center;
   background-color: #121212; 
   padding: 10px;
   border-radius: 10px;

@@ -20,7 +20,8 @@ const InputContainer = styled.div`
 `;
 
 const Label = styled.label`
-  font-weight: bold;
+  flex: 1;
+  font-weight: 400;
   font-size: 16px;
   padding: 5px 10px;
   margin: 5px;
@@ -31,13 +32,11 @@ const Label = styled.label`
   cursor: pointer;
   transition: background-color 0.3s;
   box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.4);
-
-  &:hover {
-    background-color: black;
-  }
+  box-sizing: border-box;
 `;
 
 const SelectInput = styled.select`
+  flex: 1;
   font-weight: 300;
   font-size: 16px;
   padding: 5px 10px;
@@ -49,6 +48,7 @@ const SelectInput = styled.select`
   cursor: pointer;
   transition: background-color 0.3s;
   box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
 
   &:hover {
     background-color: black;
@@ -70,7 +70,7 @@ const Input = ({ minutes, setMinutes, seconds, setSeconds, disabled, onStart }) 
 
   return (
     <InputContainer>
-      <Label>Minutes:</Label>
+      <Label>MINUTES</Label>
       <SelectInput
         value={minutes}
         onChange={(e) => setMinutes(Number(e.target.value))}
@@ -79,7 +79,7 @@ const Input = ({ minutes, setMinutes, seconds, setSeconds, disabled, onStart }) 
         {renderOptions(0, 59)}
       </SelectInput>
 
-      <Label>Seconds:</Label>
+      <Label>SECONDS</Label>
       <SelectInput
         value={seconds}
         onChange={(e) => setSeconds(Number(e.target.value))}

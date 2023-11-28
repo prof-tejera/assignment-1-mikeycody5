@@ -3,6 +3,7 @@ import Button from "../timers/shared/button.js";
 import DisplayTime from "../timers/shared/DisplayTime.js";
 import Panel from "../timers/shared/Panel.js";
 import Input from "../timers/shared/input.js";
+import ProgressBar from "../timers/shared/ProgressBar.js";
 import DisplayRounds from "../timers/shared/DisplayRounds";
 import { FaPlay, FaPause, FaFastForward } from "react-icons/fa";
 
@@ -14,64 +15,72 @@ const Tabata = () => {
   const [running, setRunning] = useState(false);
   const [rounds, setRounds] = useState(1);
   const [currentRound, setCurrentRound] = useState(1);
-  const [resting, setResting] = useState(false);
+  const [isResting, setIsResting] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [progress, setProgress] = useState(0);
 
-  const handleNextRound = useCallback(() => {
-    if (currentRound < rounds) {
-      setCurrentRound(currentRound + 1);
-      setResting(true); // Start resting after a round
-      setTime(10000); // 10 seconds rest between each round
-      setRunning(true);
-    }
-  }, [currentRound, rounds]);
+  useCallback(() => {
+    setCurrentRound((prevRound) => prevRound + 1);
+    setIsResting(true);
+    setTime(initialTime);
+    setRunning(true);
+  }, [initialTime]);
 
-  const handleTimerFinish = useCallback(() => {
-    if (currentRound < rounds) {
-      handleNextRound();
+  const calculateProgress = () => {
+    if (isResting) {
+      return (time / initialTime) * 100;
     } else {
-      setCurrentRound(1);
-      setTime(0);
-      setRunning(false);
+      return ((initialTime - time) / initialTime) * 100;
     }
-  }, [currentRound, rounds, handleNextRound]);
+  };
 
   useEffect(() => {
     let interval;
 
     if (running && time > 0) {
       interval = setInterval(() => {
-        setTime((prevTime) => prevTime - 1000);
+        setTime((prevTime) => Math.max(0, prevTime - 1000));
+        // Update progress during the rest period
+        if (isResting) {
+          const remainingTime = time / initialTime;
+          setProgress(1000 - remainingTime * 1000);
+        }
       }, 1000);
     } else if (running && time === 0) {
       clearInterval(interval);
-      if (resting) {
-        // If resting, start the next round
-        setResting(false);
-        setCurrentRound(currentRound + 1);
+      if (isResting) {
+        setIsResting(false);
+        setCurrentRound((prevRound) => prevRound + 1);
         setTime(initialTime);
         setRunning(true);
+        setProgress(0); // Reset progress when starting a new round
       } else {
-        handleTimerFinish();
+        setIsResting(true);
+        setTime(initialTime);
+        setRunning(true);
+      }
+
+      if (currentRound >= rounds) {
+        setCurrentRound(1);
+        setIsResting(false);
+        setTime(0);
+        setRunning(false);
+        setProgress(0); // Reset progress when the timer stops
       }
     } else {
       clearInterval(interval);
     }
 
     return () => clearInterval(interval);
-  }, [running, time, handleTimerFinish, resting, currentRound, initialTime]);
+  }, [running, time, isResting, initialTime, currentRound, rounds]);
 
   const handleStart = () => {
     if (!running) {
       if (time === 0) {
-        if (resting) {
-          setResting(false);
-          setCurrentRound(currentRound + 1);
-          setTime((minutes * 60 + seconds) * 1000);
-        } else {
-          setInitialTime((minutes * 60 + seconds) * 1000);
-          setTime((minutes * 60 + seconds) * 1000);
-        }
+        setInitialTime((minutes * 60 + seconds) * 1000);
+        setTime((minutes * 60 + seconds) * 1000);
       }
+      setIsResting(false);
       setRunning(true);
     }
   };
@@ -83,9 +92,9 @@ const Tabata = () => {
   const handleReset = () => {
     setInitialTime((minutes * 60 + seconds) * 1000);
     setTime((minutes * 60 + seconds) * 1000);
-    if (running) {
-      setRunning(false);
-    }
+    setCurrentRound(1);
+    setRunning(false);
+    setProgress(0); // Reset progress when the timer is reset
   };
 
   const handleFastForward = () => {
@@ -109,11 +118,10 @@ const Tabata = () => {
         onStart={handleStart}
       />
       <div className="display-time">
-        {resting ? (
-          // If resting, display "REST!"
-          <h2>REST</h2>
+        {isResting ? (
+          // If in rest state, display progress bar
+          <ProgressBar value={calculateProgress()} max="100" />
         ) : (
-          // If not resting, display the timer
           <DisplayTime time={time} />
         )}
       </div>

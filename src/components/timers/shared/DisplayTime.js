@@ -3,7 +3,8 @@ import React from "react";
 import styled from "styled-components";
 
 const Display = styled.div`
-  font-size: 39px;
+  transition: opacity 0.5s ease-in-out;
+  font-size: 60px;
   z-index: 0;
   font-weight: 200;
   padding: 7px 7px;
@@ -38,8 +39,7 @@ const DisplayTime = ({ time }) => (
   const formatTime = (time) => {
     const minutes = ("0" + Math.floor((time / 60000) % 60)).slice(-2);
     const seconds = ("0" + Math.floor((time / 1000) % 60)).slice(-2);
-    const milliseconds = ("0" + ((time / 10) % 100)).slice(-2);
-    return `${minutes}:${seconds}:${milliseconds}`;
+    return `${minutes}:${seconds}`;
   };
 
 

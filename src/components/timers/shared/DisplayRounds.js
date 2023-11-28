@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 const DisplayRoundsContainer = styled.div`
@@ -20,7 +20,8 @@ const DisplayRoundsContainer = styled.div`
 `;
 
 const DisplayRoundsLabel = styled.label`
-  font-weight: bold;
+  flex: 1;
+  font-weight: 400;
   font-size: 16px;
   padding: 5px 10px;
   margin: 5px;
@@ -31,13 +32,10 @@ const DisplayRoundsLabel = styled.label`
   cursor: pointer;
   transition: background-color 0.3s;
   box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.4);
-
-  &:hover {
-    background-color: black;
-  }
 `;
 
 const DisplayRoundsSelect = styled.select`
+  flex: 1;
   font-weight: 300;
   font-size: 16px;
   padding: 5px 10px;
@@ -54,20 +52,27 @@ const DisplayRoundsSelect = styled.select`
     background-color: black;
   }
 `;
-const renderOptions = (start, end) => {
-    const options = [];
-    for (let i = start; i <= end; i++) {
-      options.push(
-        <option key={i} value={i}>
-          {i < 10 ? `0${i}` : i}
-        </option>
-      );
-    }
-    return options;
-  };
 
-const DisplayRounds = ({ currentRound, initialRounds, onRoundsChange, disabled }) => {
+const renderOptions = (start, end) => {
+  const options = [];
+  for (let i = start; i <= end; i++) {
+    options.push(
+      <option key={i} value={i}>
+        {i < 10 ? `0${i}` : i}
+      </option>
+    );
+  }
+  return options;
+};
+
+const DisplayRounds = ({ currentRound, initialRounds, onRoundsChange, disabled, resting }) => {
   const [rounds, setRounds] = useState(initialRounds);
+
+  useEffect(() => {
+    if (resting) {
+      setRounds(currentRound);
+    }
+  }, [currentRound, resting]);
 
   const handleRoundsChange = (newRounds) => {
     setRounds(newRounds);
@@ -77,14 +82,14 @@ const DisplayRounds = ({ currentRound, initialRounds, onRoundsChange, disabled }
   return (
     <DisplayRoundsContainer>
       <DisplayRoundsLabel>
-        Round {currentRound} / {rounds}
+        ROUND {currentRound} / {rounds}
       </DisplayRoundsLabel>
       <DisplayRoundsSelect
         value={rounds}
         onChange={(e) => handleRoundsChange(Number(e.target.value))}
-        disabled={disabled}
+        disabled={disabled || resting}
       >
-        {renderOptions(1, 100)} 
+        {renderOptions(1, 100)}
       </DisplayRoundsSelect>
     </DisplayRoundsContainer>
   );
